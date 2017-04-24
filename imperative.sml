@@ -92,16 +92,16 @@ fun runInsn MoveOneRight = modify
    |  (os,(ls,x,r::rs)) => (os,(x::ls,r,rs))
   )
 
-  | runInsn IncOne = modify
+  | runInsn IncrementOne = modify
   (fn ((ls,x,rs),ts) => ((ls,x+1,rs),ts))
 
-  | runInsn IncTwo = modify
+  | runInsn IncrementTwo = modify
   (fn (os,(ls,x,rs)) => (os,(ls,x+1,rs)))
 
-  | runInsn DecOne = modify
+  | runInsn DecrementOne = modify
   (fn ((ls,x,rs),ts) => ((ls,x-1,rs),ts))
 
-  | runInsn DecTwo = modify
+  | runInsn DecrementTwo = modify
   (fn (os,(ls,x,rs)) => (os,(ls,x-1,rs)))
 
   | runInsn OutputOne = 
