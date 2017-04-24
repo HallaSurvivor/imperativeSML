@@ -67,28 +67,28 @@ end
 
 (* interpreting *)
 
-type tape = int list * int * int list
+type tape = IntInf.int list * IntInf.int * IntInf.int list
 type tapes = tape * tape
 
 type runner = (unit, tapes) state
 
 fun runInsn MoveOneRight = modify
-  (fn (([],   x,rs),ts) => (([],0,x::rs),ts) 
+  (fn (([],   x,rs),ts) => (([],0 : IntInf.int,x::rs),ts) 
    |  ((l::ls,x,rs),ts) => ((ls,l,x::rs),ts)
   )
 
   | runInsn MoveTwoRight = modify
-  (fn (os,([],   x,rs)) => (os,([],0,x::rs)) 
+  (fn (os,([],   x,rs)) => (os,([],0 : IntInf.int,x::rs)) 
    |  (os,(l::ls,x,rs)) => (os,(ls,l,x::rs))
   )
 
   | runInsn MoveOneLeft = modify
-  (fn ((ls,x,[]   ),ts) => ((x::ls,0,[]),ts) 
+  (fn ((ls,x,[]   ),ts) => ((x::ls,0 : IntInf.int,[]),ts) 
    |  ((ls,x,r::rs),ts) => ((x::ls,r,rs),ts)
   )
 
   | runInsn MoveTwoLeft = modify
-  (fn (os,(ls,x,[]   )) => (os,(x::ls,0,[])) 
+  (fn (os,(ls,x,[]   )) => (os,(x::ls,0 : IntInf.int,[])) 
    |  (os,(ls,x,r::rs)) => (os,(x::ls,r,rs))
   )
 
@@ -105,10 +105,10 @@ fun runInsn MoveOneRight = modify
   (fn (os,(ls,x,rs)) => (os,(ls,x-1,rs)))
 
   | runInsn OutputOne = 
-  get >>= (fn ((_,x,_),_) => (return o print o Char.toString o Char.chr) x)
+  get >>= (fn ((_,x,_),_) => (return o print o Char.toString o Char.chr o IntInf.toInt) x)
 
   | runInsn OutputTwo = 
-  get >>= (fn (_,(_,x,_)) => (return o print o Char.toString o Char.chr) x)
+  get >>= (fn (_,(_,x,_)) => (return o print o Char.toString o Char.chr o IntInf.toInt) x)
 
   | runInsn XorOne = modify
   (fn ((ls,x,rs),(ls',y,rs')) => ((ls,IntInf.xorb (x,y),rs),(ls',y,rs')))
