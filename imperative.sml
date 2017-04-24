@@ -1,6 +1,8 @@
 (* Christopher Grossack - 2017    *)
 (* Two tape turing machine in SML *)
-(* Heavily inspired by brainfuck  *)
+(* if the second tape isn't used, *)
+(* it functions identically to    *)
+(* brainfuck                      *)
 (* (unobfuscated)                 *)
 
 use "parsec.sml";
@@ -15,6 +17,8 @@ datatype Insn = MoveOneRight
               | IncrementTwo
               | DecrementOne
               | DecrementTwo
+              | InputOne
+              | InputTwo
               | OutputOne
               | OutputTwo
               | XorOne
@@ -33,10 +37,12 @@ val parseIncOne   = gen #"+" IncrementOne
 val parseIncTwo   = gen #"*" IncrementTwo
 val parseDecOne   = gen #"-" DecrementOne
 val parseDecTwo   = gen #"/" DecrementTwo
+val parseInOne    = gen #"," InputOne
+val parseInTwo    = gen #";" InputTwo
 val parseOutOne   = gen #"." OutputOne
 val parseOutTwo   = gen #":" OutputTwo
 val parseXorOne   = gen #"^" XorOne
-val parseXorTwo   = gen #"v" XorTwo
+val parseXorTwo   = gen #"%" XorTwo
 
 fun parseLoop s = 
 let 
@@ -55,6 +61,8 @@ let
                <|> parseIncTwo
                <|> parseDecOne
                <|> parseDecTwo
+               <|> parseInOne
+               <|> parseInTwo
                <|> parseOutOne
                <|> parseOutTwo
                <|> parseXorOne
@@ -117,6 +125,22 @@ fun runInsn MoveOneRight = modify
 
   | runInsn DecrementTwo = modify
   (fn (os,(ls,x,rs)) => (os,(ls,x-1,rs)))
+
+  | runInsn InputOne = 
+  let
+    val SOME raw = TextIO.inputLine TextIO.stdIn
+    val h   = (Char.ord o List.hd o String.explode) raw
+  in
+    modify (fn ((ls,x,rs),ts) => ((ls,h,rs),ts))
+  end
+
+  | runInsn InputOne = 
+  let
+    val SOME raw = TextIO.inputLine TextIO.stdIn
+    val h   = (Char.ord o List.hd o String.explode) raw
+  in
+    modify (fn (os,(ls,x,rs)) => (os,(ls,h,rs)))
+  end
 
   | runInsn OutputOne = 
   get >>= (fn ((_,x,_),_) => (return o printHead) x)
