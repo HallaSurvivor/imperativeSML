@@ -120,3 +120,26 @@ fun runInsn MoveOneRight = modify
   get >>= (fn ((_,x,_), (_,y,_)) => if x = y then return () else runInsns is >> runInsn lp)
 
 and runInsns xs = mapM_ runInsn xs
+
+fun show ((ls,x,rs),(ls',x',rs')) = 
+let
+  val t1 = "Tape 1: ["^
+    (String.concatWith ", " (map (Int.toString o IntInf.toInt) (ls@(x::rs))))^"]"
+
+  val t2 = "Tape 2: ["^
+    (String.concatWith ", " (map (Int.toString o IntInf.toInt) (ls'@(x'::rs'))))^"]"
+in
+  t1^"\n"^t2
+end
+
+fun main s = 
+  case (parseInsns o String.explode) s of
+    (LEFT e, _)   => (print e; 1)
+  | (RIGHT is, _) => 
+      let
+        val initialState = (([],0 : IntInf.int,[]),([],0 : IntInf.int,[]))
+        val st = runInsns is
+        val endState = evalState st initialState
+      in
+        0
+      end

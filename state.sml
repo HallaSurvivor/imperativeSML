@@ -18,3 +18,7 @@ fun put s  = fn _ => ((),s)
 fun modify f = get >>= (put o f)
 
 fun mapM_ f = foldr (fn (x,y) => f x >> y) (return ())
+
+fun runState st s = st s
+fun evalState st s = (fn (a,b) => b) (st s)
+fun execState st s = (fn (a,b) => a) (st s)
