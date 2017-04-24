@@ -88,6 +88,7 @@ fun runInsn MoveOneRight = modify
 
   | runInsn IncOne = modify
   (fn ((ls,x,rs),ts) => ((ls,x+1,rs),ts))
+
   | runInsn IncTwo = modify
   (fn (os,(ls,x,rs)) => (os,(ls,x+1,rs)))
 
@@ -104,6 +105,6 @@ fun runInsn MoveOneRight = modify
   (fn ((ls,x,rs),(ls',y,rs')) => ((ls,x,rs),(ls',IntInf.xorb (x,y),rs')))
 
   | runInsn (lp as Loop is) = 
-  get >>= (fn ((ls,x,rs), ts) => if x = 0 then return () else runInsns is >> runInsn lp)
+  get >>= (fn ((_,x,_), (_,y,_)) => if x = y then return () else runInsns is >> runInsn lp)
 
 and runInsns xs = mapM_ runInsn xs
