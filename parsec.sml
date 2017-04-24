@@ -43,6 +43,8 @@ fun p1 <|> p2 = fn s =>
     (LEFT e, _) => p2 s
   | (RIGHT c, s') => (RIGHT c, s')
 
+fun noneOf s = satisfy (fn c => String.isSubstring (String.str c) s)
+
 fun many p = 
 let
   fun p' s =
