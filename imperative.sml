@@ -15,6 +15,8 @@ datatype Insn = MoveOneRight
               | IncrementTwo
               | DecrementOne
               | DecrementTwo
+              | OutputOne
+              | OutputTwo
               | XorOne
               | XorTwo
               | Loop of Insn list
@@ -31,6 +33,8 @@ val parseIncOne   = gen #"+" IncrementOne
 val parseIncTwo   = gen #"*" IncrementTwo
 val parseDecOne   = gen #"-" DecrementOne
 val parseDecTwo   = gen #"/" DecrementTwo
+val parseOutOne   = gen #"." OutputOne
+val parseOutTwo   = gen #":" OutputTwo
 val parseXorOne   = gen #"^" XorOne
 val parseXorTwo   = gen #"v" XorTwo
 
@@ -51,6 +55,8 @@ let
                <|> parseIncTwo
                <|> parseDecOne
                <|> parseDecTwo
+               <|> parseOutOne
+               <|> parseOutTwo
                <|> parseXorOne
                <|> parseXorTwo
                <|> parseLoop
@@ -97,6 +103,12 @@ fun runInsn MoveOneRight = modify
 
   | runInsn DecTwo = modify
   (fn (os,(ls,x,rs)) => (os,(ls,x-1,rs)))
+
+  | runInsn OutputOne = 
+  get >>= (fn ((_,x,_),_) => (return o print o Char.toString o Char.chr) x)
+
+  | runInsn OutputTwo = 
+  get >>= (fn (_,(_,x,_)) => (return o print o Char.toString o Char.chr) x)
 
   | runInsn XorOne = modify
   (fn ((ls,x,rs),(ls',y,rs')) => ((ls,IntInf.xorb (x,y),rs),(ls',y,rs')))
