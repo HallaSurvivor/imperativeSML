@@ -129,7 +129,7 @@ fun runInsn MoveOneRight = modify
   | runInsn InputOne = 
   let
     val SOME raw = TextIO.inputLine TextIO.stdIn
-    val h   = (Char.ord o List.hd o String.explode) raw
+    val h   = (IntInf.fromInt o Char.ord o List.hd o String.explode) raw
   in
     modify (fn ((ls,x,rs),ts) => ((ls,h,rs),ts))
   end
@@ -137,7 +137,7 @@ fun runInsn MoveOneRight = modify
   | runInsn InputTwo = 
   let
     val SOME raw = TextIO.inputLine TextIO.stdIn
-    val h   = (Char.ord o List.hd o String.explode) raw
+    val h   = (IntInf.fromInt o Char.ord o List.hd o String.explode) raw
   in
     modify (fn (os,(ls,x,rs)) => (os,(ls,h,rs)))
   end
