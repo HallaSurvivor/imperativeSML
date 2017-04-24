@@ -69,8 +69,22 @@ end
 
 type tape = IntInf.int list * IntInf.int * IntInf.int list
 type tapes = tape * tape
-
 type runner = (unit, tapes) state
+
+
+val printHead = print o String.str o Char.chr o IntInf.toInt
+
+fun show ((ls,x,rs),(ls',x',rs')) = 
+let
+  val t1 = "Tape 1: ["^
+    (String.concatWith ", " (map (Int.toString o IntInf.toInt) (ls@(x::rs))))^"]"
+
+  val t2 = "Tape 2: ["^
+    (String.concatWith ", " (map (Int.toString o IntInf.toInt) (ls'@(x'::rs'))))^"]"
+in
+  t1^"\n"^t2
+end
+
 
 fun runInsn MoveOneRight = modify
   (fn (([],   x,rs),ts) => (([],0 : IntInf.int,x::rs),ts) 
@@ -105,10 +119,10 @@ fun runInsn MoveOneRight = modify
   (fn (os,(ls,x,rs)) => (os,(ls,x-1,rs)))
 
   | runInsn OutputOne = 
-  get >>= (fn ((_,x,_),_) => (return o print o Char.toString o Char.chr o IntInf.toInt) x)
+  get >>= (fn ((_,x,_),_) => (return o printHead) x)
 
   | runInsn OutputTwo = 
-  get >>= (fn (_,(_,x,_)) => (return o print o Char.toString o Char.chr o IntInf.toInt) x)
+  get >>= (fn (_,(_,x,_)) => (return o printHead) x)
 
   | runInsn XorOne = modify
   (fn ((ls,x,rs),(ls',y,rs')) => ((ls,IntInf.xorb (x,y),rs),(ls',y,rs')))
@@ -120,17 +134,6 @@ fun runInsn MoveOneRight = modify
   get >>= (fn ((_,x,_), (_,y,_)) => if x = y then return () else runInsns is >> runInsn lp)
 
 and runInsns xs = mapM_ runInsn xs
-
-fun show ((ls,x,rs),(ls',x',rs')) = 
-let
-  val t1 = "Tape 1: ["^
-    (String.concatWith ", " (map (Int.toString o IntInf.toInt) (ls@(x::rs))))^"]"
-
-  val t2 = "Tape 2: ["^
-    (String.concatWith ", " (map (Int.toString o IntInf.toInt) (ls'@(x'::rs'))))^"]"
-in
-  t1^"\n"^t2
-end
 
 fun main s = 
   case (parseInsns o String.explode) s of
